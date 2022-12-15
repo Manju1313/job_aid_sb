@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block content %}
+    <!-- BEGIN: Content-->
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse:collapse;
+            width: 100%;
+        }
+        
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+        }
+        #more {display: none;}
+        </style>
+        <div class="card-header border-bottom">
+            <h4 class="card-title">Patient search</h4>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+
+
+            
+<div class="shadow-lg p-3 mb-5 bg-white rounded container-fluid">
+    <form method='POST' class="needs-validation" novalidate>
+      {% csrf_token %}
+
+        <div class="row">
+                <div class="col-md-4">
+                    <label for="validationCustom04" class="form-label">Pre ART Number:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                    <input type="text" class="form-control"  name="name" required>
+                </div>
+                <div class="col-lg-4">
+                    <label>ART Number:</label>
+                    <input name="art_no" type="text" value="{% if art_no %}{{art_no}}{% endif %}" class="form-control dt-input dt-ART-number" data-column="4" placeholder="" data-column-index="3" />
+                </div>
+            <div class="col-lg-4">
+                <label>Patient Name:</label>
+                <input name="patient_name" type="text" value="{% if patient_name %}{{patient_name}}{% endif %}" class="form-control dt-input dt-full-name" data-column="1" placeholder="" data-column-index="0" />
+            </div>
+        </div>
+        <span id="data"> </span><span id="more">
+    <div id="div1">
+        <div  class="row">
+            <div class="col-md-4">
+                <label>Mobile Number:</label>
+
+                <input name="mobile_number" type="number" value="{{mobile_number}}" class="form-control dt-input" data-column="3"  data-column-index="2" />
+            </div>
+            <div class="col-lg-4">
+                <label>Aadhaar Number:</label>
+                <input name="aadhar_number" type="number" class="form-control dt-input" value="{{aadhar_number}}" data-column="5" placeholder="" data-column-index="5" />
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="inputState">gender(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                    <select class="form-select" id="validationCustom04" name="gender" required>
+                        <option selected disabled value="">Choose...</option>     
+                        <option value="1">Male</option>
+                        <option value="2">female</option>
+                        <option value=3>TS / TG</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+            <div id="div2" class="row">
+                <div class="col-lg-4">
+                    <label>Family ID:</label>
+                    <input type="text" name="family_id" value="{{family_id}}" class="form-control dt-input dt-full-name" data-column="2" placeholder="" data-column-index="1" />
+                </div>
+                <div class="col-lg-4">
+                    <label>Date of Visit:</label>
+                    <input type="text" name="date_visit" value="{{date_visit}}" class="form-control dt-input dt-full-name dis_fut_dt" data-column="2" placeholder="" data-column-index="1" />
+                </div>
+            </div>
+    </div>  
+                
+    
+</form>
+
+<!-- <div>
+    <button type="submit" class="btn btn-primary mr-1 waves-effect waves-float waves-light" tabindex="5">Search</button>
+    <span type="reset" class="btn btn-outline-dark" onclick="location.href='/patient/plha-listing/'" tabindex="7">Reset</span>
+    
+</div>          -->
+            </span>
+            <button class="position-absolute bottom-30 end-50" onclick="myFunction()" id="myBtn">Show more</button>
+            
+            <script>
+                function myFunction() {
+                    var data = document.getElementById("data");
+            var moreText = document.getElementById("more");
+            var btnText = document.getElementById("myBtn");
+            
+            if (data.style.display === "none") {
+                data.style.display = "inline";
+                btnText.innerHTML = "Show more"; 
+                moreText.style.display = "none";
+            } else {
+                data.style.display = "none";
+                btnText.innerHTML = "Show less"; 
+                moreText.style.display = "inline";
+            }
+        }
+
+        
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<br><br>
+
+<input id="myInput" type="search" placeholder="Search..">
+<br><br>
+                   
+</div>
+
+        <hr class="my-0" />
+            <div class="card-datatable">
+                <table class="dt-advanced-search table">
+                    <thead>
+                        <tr>
+                            <th >S.NO</th>
+                            <th>Patient name</th>
+                            <th> Pre ART No</th>
+                            <th>Pre ART Status</th>
+                            <th>ART number</th>
+                            <th>ART status</th>
+                            <th>Last Visit Date</th>
+                        </tr>                      
+                    </thead>
+                    <tbody id="myTable">
+                        <tr>
+                            {% for i in artregistration %}
+                            <td>{{ i.sno }}</td>
+                            <td>{{ i.name_patient}}</td>
+                            <td>{{ i.pre_art_no}}</td>
+                            <td> {{ i.status_in_pre_art_care }}</td>
+                            <td> {{ i.art_reg_no }}</td>
+                            <td> {{ i.art_care_status }}</td>
+                            <td>{{ i.art_initiation_private_date|date:'d-m-Y'}}</td>
+                        </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            
+
+   
+        
+
+        
+{% endblock %}
+
+

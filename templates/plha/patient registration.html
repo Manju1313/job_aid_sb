@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+
+
+<div class="card-header border-bottom">
+    <h4 class="card-title">Art Registeration </h4>
+</div>
+<div class="shadow-lg p-3 mb-5 bg-white rounded container-fluid mt-3">
+    <form method='POST' class="container-fluid mt-3" novalidate>
+      {% csrf_token %}
+        <h5>Patient details</h5>
+
+            <div class="row">
+            <div class="col-md-4">
+                <label for="validationCustom04" class="form-label">Patient Name:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                <input type="text" class="form-control"  name="name" required>
+            </div>
+            <div class="col-lg-4">
+                <label>Pre ART No:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                <input name="art_no" type="text" value="{% if art_no %}{{art_no}}{% endif %}" class="form-control dt-input dt-ART-number" data-column="4" placeholder="" data-column-index="3" />
+            </div>
+            <div class="col-lg-4">
+                <label>Date of Registration:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                <input type="date" class="form-control" id="date" name="date_of_registeration" required>
+            </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <label>Status in Pre-ART care:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                    <select class="form-select" id="validationCustom04" name="status_in_pre_art_care"  required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="1">Eligible but not initialized in ART</option>
+                        <option value="2">Died</option>
+                        <option value="3">Opted Out</option>
+                        <option value="4">Peer Educator</option>
+                        <option value="5"> Transfer out</option>
+                        <option value="6"> Initial ART</option>
+                        <option value="7">  LFU before 31-Dec-2016</option>
+                        <option value="8"> LFU After 1-Jan-2017 </option>
+                    </select>
+                </div>
+            </div> 
+
+
+            <h5>Transfer in Details</h5>
+
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <label for="validationCustom04" class="form-label">Transferred-In:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                    <select class="form-select" id="validationCustom04" name="Transferred-In"  required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="1"> Yes</option>
+                        <option value="2">No</option> 
+                    </select>           
+                </div>
+                <div class="col-md-4">
+                    <label>History of treatment taken from Private/NGO?:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                    <select class="form-select" id="validationCustom04" name="history_of_treatment_taken"  required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="1">Yes</option>
+                        <option value="2">No</option>            
+                        <option value="3">Update</option> 
+                    </select>           
+                </div>
+            </div>
+
+                    <h5>HIV confirmation </h5>
+                
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="validationCustom04" class="form-label">Date of confirmed HIV+ Test *:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                            <input type="date" class="form-control"  name="date_of_confirmed HIV" required>
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Place of HIV test (ICTC Code) *:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                            <input name="art_no" type="text" value="{% if art_no %}{{art_no}}{% endif %}" class="form-control dt-input dt-ART-number" data-column="4" placeholder="" data-column-index="3" />
+                        </div>
+                        <div class="col-lg-4">
+                            <label>PID Number *:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                            <input name="patient_name" type="text" value="{% if patient_name %}{{patient_name}}{% endif %}" class="form-control dt-input dt-full-name" data-column="1" placeholder="" data-column-index="0" />
+                        </div>
+                    </div>
+                        <div class="row mb-5">
+                            <div class="col-md-4">
+                                <label>HIV Report:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                                <select class="form-select" id="validationCustom04" name="hiv_report"  required>
+                                    <option selected disabled value="">Choose...</option>
+                                    <option value="1">HIV-1</option>
+                                    <option value="2">Hiv-2</option>            
+                                    <option value="2">HIV-1&Hiv-2</option>            
+                                    <option value="3">Update</option> 
+                                </select>                         
+                            </div>
+                        </div>   
+
+
+                        <h5>Diabetes / Hypertension</h5>
+
+                        <div class="row mb-5">
+                            <div class="col-md-4">
+                                <label for="validationCustom04" class="form-label">Diabetes:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                                <select class="form-select" id="validationCustom04" name="diabetes"  required>
+                                    <option selected disabled value="">Choose...</option>
+                                    <option value="1">Pre-existing</option>
+                                    <option value="2">No</option> 
+                                </select>  
+                            </div>
+                            <div class="col-md-4">
+                                <label>Hypertension:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                                <select class="form-select" id="validationCustom04" name="hypertension"  required>
+                                    <option selected disabled value="">Choose...</option>
+                                    <option value="1">Pre-existing</option>
+                                    <option value="2">No</option> 
+                                </select>                          
+                            </div>
+                        </div>
+
+
+                <h5> Others </h5>
+                
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="validationCustom04" class="form-label">Already diagnosed with TB?:(<span style="color:orangered;font-weight:bold">*</span>):</label>
+                            <select class="form-select" id="validationCustom04" name="history_of_treatment_taken"  required>
+                                <option selected disabled value="">Choose...</option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>            
+                                <option value="3">Update</option> 
+                            </select>                           
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Samvaad Application ID:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                            <input name="art_no" type="text" value="{% if art_no %}{{art_no}}{% endif %}" class="form-control dt-input dt-ART-number" data-column="4" placeholder="" data-column-index="3" />
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Disclosure with Family:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                            <select class="form-select" id="validationCustom04" name="history_of_treatment_taken"  required>
+                                <option selected disabled value="">Choose...</option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>            
+                                <option value="3">Update</option> 
+                            </select>                           
+                        </div>
+                    </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Family ID:(<span style="color:orangered;font-weight:bold">*</span>)</label>
+                                <input name="mobile_number" type="number" value="{{mobile_number}}" class="form-control dt-input" data-column="3"  data-column-index="2" />
+                            </div>
+                        </div> 
+                        
+                        <div class="d-flex justify-content-sm-end gap-2 mt-3">
+                            <button class="btn btn-success" aria-current="page" href="">Cancel</button >
+                                <!-- <a class="nav-link active text-white" aria-current="page" href="">Cancel</a></button> -->
+                            <button class="btn btn-primary" type="submit" href="">Submit </button>
+                        </div>
+    </form>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,844 @@
+
+{% extends "base.html" %}
+{% load configuration_tags   %}
+{% block content %}
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="header-navbar-shadow"></div>
+        <div class="content-wrapper">
+            <div class="content-body">
+                <section id="flatpickr">
+                    <div class="card">
+                        <div class="card-header">
+                            
+                            {% if uuid %}
+                            {%  user_summary uuid as user_summary %}
+                                <h4 class="card-title">ART Registration - <span class="text-primary">{{user_summary}}  </span></h4>
+                            {% else %}
+                                <h4 class="card-title">ART Registration</h4>
+                            {% endif %}
+                        </div>
+                        {% if uuid %}
+                            <form  class="needs-validation" name="art_registration_form" id="art_registration_form" action="/patient/registration/view/{{uuid}}/" method="POST" enctype="multipart/form-data" novalidate="novalidate" autocomplete="off">
+                                {% if request|has_permission_for_action:'art-registeration&edit' %}
+                                    <fieldset >
+
+                                {% else %}
+                                    <fieldset disabled="disabled">
+                                {% endif %}
+  
+                        {% else%}
+                            <form class="needs-validation" name="art_registration_form" id="art_registration_form" action="/patient/registration/" method="POST" enctype="multipart/form-data" novalidate="novalidate" autocomplete="off">
+                                {% if request|has_permission_for_action:'register-new-patient&add' %}
+                                    <fieldset >
+
+                                {% else %}
+                                    <fieldset disabled="disabled">
+                                {% endif %}
+
+						{% endif %}
+                            {% csrf_token %}
+                            <input type="hidden" class="form-control" placeholder="" value="{{uuid}}" id="patient_uuid" name="patient_uuid" tabindex="1" />
+                            <div class="card-body">
+                                <div class="card-header pl-0">
+                                    <h4 class="card-title">Patient Details</h4>
+                                </div >                              
+                            <div class="row">
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="patient_name">Patient Name <span class="text-danger">*</span></label>
+                                        <input type="text" id="patient_name" name="patient_name" class="form-control"  value="{{patient_art_obj.name_patient}}" tabindex="1" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                       <label for="date_of_registration">Date of Registration <span class="text-danger">*</span></label>
+                                    <input type="text" id="date_of_registration" value="{{patient_art_obj.date_registration|date:'d-m-Y'}}" name="date_of_registration" class="form-control flatpickr-validation dis_fut_dt"  tabindex="2"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="pre_art_no">Pre ART No <span class="text-danger">*</span></label>
+                                        {% if pre_art_no_exist %}
+                                            <input type="text" id="pre_art_no" value="{{ pre_art_no}}" name="pre_art_no"  class="form-control is-invalid" placeholder="MUM/LTM/000" tabindex="3" />
+                                            <span id="pre_arterror" class="invalid-feedback" style="color: aqua">Pre Art Number already exist.</span>
+                                        {% else %}
+                                            <input type="text" id="pre_art_no" value="{{ patient_art_obj.pre_art_no}}" name="pre_art_no"  class="form-control" placeholder="MUM/LTM/000" tabindex="3" />
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="status_pre_art_care">Status in Pre-ART care <span class="text-danger">*</span></label>
+                                        <select class="custom-select" name="status_pre_art_care" id="status_pre_art_care" tabindex="4">
+                                            <option value="" selected>Select</option>
+                                            {% for art_status in art_status_choices %}
+                                            <option value="{{art_status.0}}" {% if art_status.0 == patient_art_obj.status_in_pre_art_care %}selected{% endif %}>{{art_status.1}}</option>
+                                            {% endfor %}                                        
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="card-header pl-0">
+                                <h4 class="card-title">Transfer In Details</h4>
+                            </div >
+                            <div class="row">
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="transferred_in">Transferred-In<span class="text-danger">*</span></label>
+                                        <select class="custom-select" name="transferred_in" id="transferred_in" tabindex="8">
+                                            <option value="" selected="">Select</option>
+                                            <option value="2">Yes</option>
+                                            <option value="1">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none trans_in">
+                                    <div class="form-group">
+                                        <label for="transferred_in_status">Transfer in status<span class="text-danger">*</span></label>
+                                        <select class="custom-select transferred_status" name="transferred_in_status"  id="transferred_in_status" tabindex="13">
+                                            <option value="" selected="">Select</option>
+                                            <option value="1">PRE ART</option>
+                                            <option value="2">On ART</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-12 d-none trans_in">
+                                    <div class="form-group">
+                                        <label for="transferred_in_state">Select State</label>
+                                        <select class="custom-select" name="transferred_in_state" id="transferred_in_state" tabindex="9">
+                                            <option value="" selected="">Select</option>
+                                            {% for state in states %}
+                                            <option value="{{state.id}}" {% if state.id == patient_art_obj.transferred_in_from_art.parent.parent.id %}selected{% endif %}>{{state.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none trans_in">
+                                    <div class="form-group">
+                                        <label for="transferred_in_district">Select District</label>
+                                        <select class="custom-select" name="transferred_in_district" id="transferred_in_district" tabindex="10">
+                                            <option value="" selected="">Select</option>
+                                            {% for district in districts %}
+                                            <option value="{{district.id}}" {% if district.id == patient_art_obj.transferred_in_from_art.parent.id %}selected{% endif %}>{{district.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none trans_in">
+                                    <div class="form-group">
+                                        <label for="transferred_in_art">Transfer-In from ART<span class="text-danger">*</span></label>
+                                        <select class="custom-select" name="transferred_in_art" id="transferred_in_art" tabindex="11">
+                                            <option value="" selected="">Select</option>
+                                            {% if not error %}
+                                            {% for transferred_in_art in transferred_in_arts %}
+                                            <option value="{{transferred_in_art.id}}" {% if transferred_in_art.id == patient_art_obj.transferred_in_from_art.id %}selected{% endif %}>{{transferred_in_art.code}} - {{transferred_in_art.name}}</option>
+                                            {% endfor %}
+                                            {% endif %}                                          
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none trans_in">
+                                    <div class="form-group">
+                                       <label for="date_art_init">Date of ART initiation (Transfer - In) <span class="text-danger">*</span></label>
+                                    <input type="text" id="date_art_init" value="{{patient_art_obj.date_art_initiation|date:'d-m-Y'}}" name="date_art_init" class="form-control dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="12" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="his_take_pvt_ngo">History of treatment taken from Private/ NGO ?<span class="text-danger">*</span></label>
+                                        </label>
+                                        <select class="custom-select" name="his_take_pvt_ngo" id="his_take_pvt_ngo" tabindex="13">
+                                            <option value="" selected="">Select</option>
+                                            <option value="2">Yes</option>
+                                            <option value="1">No</option>
+                                            <option value="3">Update</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none is_dt_of_ngo">
+                                    <div class="form-group">
+                                       <label for="dt_of_pvt_ngo">Date of ART initiation (if taken from Private / NGO)</label>
+                                    <input type="text" id="dt_of_pvt_ngo" value="{{patient_art_obj.art_initiation_private_date|date:'d-m-Y'}}" name="dt_of_pvt_ngo" class="form-control dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="14" />
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="card-header pl-0">
+                            <h4 class="card-title">HIV Confirmation</h4>
+                        </div >
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                    <label for="confirm_hiv_date">Date of confirmed HIV+ Test <span class="text-danger">*</span></label>
+                                <input type="text" id="confirm_hiv_date" value="{{patient_art_obj.hiv_test_confirmed_date|date:'d-m-Y'}}" name="confirm_hiv_date" class="form-control dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="15" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                    <label for="place_of_hiv">Place of HIV test (ICTC Code) <span class="text-danger">*</span></label>
+                                    <input type="text" id="place_of_hiv" name="place_of_hiv" class="form-control"  value="{{ patient_art_obj.ictc_code}}" name="fname-column" tabindex="16" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                    <label for="pid_num">PID Number <span class="text-danger">*</span></label>
+                                    {% if pid_exist %}
+                                        <input  type="text" id="pid_num" value="{{ pid_num }}" name="pid_num" class="form-control is-invalid"  name="fname-column" tabindex="17" />
+                                        <span id="pid_num-unique-error" class="error invalid-feedback" style="color: aqua">PID Number already exist.</span>
+                                    {% else %}
+                                    <input  type="text" id="pid_num" value="{{ patient_art_obj.pid_number}}" name="pid_num" class="form-control"  name="fname-column" tabindex="17" />
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                    <label for="hiv_report">HIV Report <span class="text-danger">*</span></label>
+                                    <select class="custom-select" id="hiv_report" name="hiv_report" tabindex="18">
+                                        <option value="" selected>Select</option>
+                                        {% for hiv_report in hiv_reports %}
+                                        <option value="{{hiv_report.0}}" {% if hiv_report.0 == patient_art_obj.hiv_report %}selected{% endif %}>{{hiv_report.1}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-header pl-0">
+                            <h4 class="card-title">Diabetes / Hypertension</h4>
+                        </div >
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                   <label for="art_reg_diabetes">Diabetes <span class="text-danger">*</span></label>
+                                   <select class="custom-select" name="art_reg_diabetes" id="art_reg_diabetes" tabindex="6">
+                                        <option value="" selected>Select</option>
+                                        <!-- {% for art_dia_hyp in art_dia_hyps %}
+                                        <option value="{{art_dia_hyp.0}}" {% if art_dia_hyp.0 == patient_art_obj.art_reg_diabetes %}selected{% endif %}>{{art_dia_hyp.1}}</option>
+                                        {% endfor %} -->
+
+                                        <option value="1">Pre-existing</option>
+                                        <!-- <option value="2">Detected during treatment</option> -->
+                                        <option value="3">No</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-12">
+                                <div class="form-group">
+                                   <label for="art_reg_hypertention">Hypertension <span class="text-danger">*</span></label>
+                                <select class="custom-select" name="art_reg_hypertention" id="art_reg_hypertention" tabindex="6">
+                                    <option value="" selected>Select</option>
+                                    <!-- {% for art_dia_hyp in art_dia_hyps %}
+                                    <option value="{{art_dia_hyp.0}}" {% if art_dia_hyp.0 == patient_art_obj.art_reg_hypertention %}selected{% endif %}>{{art_dia_hyp.1}}</option>
+                                    {% endfor %} -->
+
+                                    <option value="1">Pre-existing</option>
+                                    <!-- <option value="2">Detected during treatment</option> -->
+                                    <option value="3">No</option>
+                                </select>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="card-header pl-0 d-none is_art_reg">
+                            <h4 class="card-title">ART Status</h4>
+                        </div >
+                        <div class="row">
+                            <div class="col-lg-4 col-12 d-none is_art_reg">
+                                <div class="form-group">
+                                    <label for="art_reg_no">ART Reg No. (If initiated on ART)<span class="text-danger">*</span></label>
+                                    {% if art_reg_no_exist%}
+                                        <input type="text" id="art_reg_no" name="art_reg_no" class="form-control is-invalid" placeholder="" value="{{ art_reg_no }}"  tabindex="19" />
+                                        <span id="art_reg_no_err" class="invalid-feedback" style="color: aqua">Art Number already exist.</span>
+                                    {% else %}
+                                        <input type="text" id="art_reg_no" name="art_reg_no" class="form-control" placeholder="" value="{{ patient_art_obj.art_reg_no}}"  tabindex="19" />
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-12 d-none is_art_reg">
+                                <div class="form-group">
+                                    <label for="date_start_art">Date of Start of ART <span class="text-danger">*</span></label>
+                                <input type="text" id="date_start_art" value="{{patient_art_obj.art_start_date|date:'d-m-Y'}}" name="date_start_art"  class="form-control dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="20" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-12 d-none is_art_reg">
+                                <div class="form-group">
+                                    <label for="status_art_care">Status in ART care <span class="text-danger">*</span></label>
+                                    <select class="custom-select" name="status_art_care" id="status_art_care" tabindex="21">
+                                        <option value="" selected>Select</option>
+                                        {% for art_care in art_cares_choices %}
+                                        <option value="{{art_care.0}}" {% if art_care.0 == patient_art_obj.art_care_status %}selected{% endif %}>{{art_care.1}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="card-header pl-0 d-none is_died">
+                                <h4 class="card-title">Death Details</h4>
+                            </div >
+                            <div class="row">
+                                <div class="col-lg-4 col-12 d-none is_died">
+                                    <div class="form-group">
+                                       <label for="date_of_death">Date of Death/Date of death reported <span class="text-danger">*</span></label>
+                                        <input type="text" id="date_of_death" value="{{patient_art_obj.death_date|date:'d-m-Y'}}" name="date_of_death" class="form-control flatpickr dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="5" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-12 d-none is_of_death">
+                                    <div class="form-group">
+                                        <label for="cause_of_death">Cause of death <span class="text-danger">*</span></label>
+                                        <select class="custom-select" id="cause_of_death" name="cause_of_death" tabindex="6">
+                                            <option value="" selected>Select</option>
+                                            {% for death_cause in death_causes %}
+                                            <option value="{{death_cause.uuid}}" {% if patient_art_obj.death_cause_uuid == death_cause.uuid|stringformat:"s" %}selected{% endif %} >{{ death_cause.cause_name }} </option>
+                                            {% endfor %}
+                                            </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none is_reason_death">
+                                    <div class="form-group">
+                                        <label for="reason_death">If any other death reason</label>
+                                        <input type="text" id="reason_death" name="reason_death" value="{{patient_art_obj.death_reason}}" class="form-control" placeholder="" tabindex="7" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-header pl-0 d-none is_transfer_out">
+                                <h4 class="card-title">Transfer Out Details</h4>
+                            </div >
+                            <div class="row">
+                                <div class="col-lg-4 col-12 d-none is_transfer_out">
+                                    <div class="form-group">
+                                       <label for="trans_out_conf_date">Transfer out confirmation date</label>
+                                        <input type="text" id="trans_out_conf_date" value="{{patient_art_obj.transfer_out_confirmation_data|date:'d-m-Y'}}" name="trans_out_conf_date" class="form-control dis_fut_dt" placeholder="DD-MM-YYYY" tabindex="25" />
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-12 d-none is_transferred_artc">
+                                    <div class="form-group">
+                                        <label for="trans_artc_code">Transferred ARTC code <span class="text-danger">*</span></label>
+                                        <input type="text" value="{{patient_art_obj.transferred_art_code}}" id="trans_artc_code" name="trans_artc_code" class="form-control" placeholder="MUM-LTM-004" tabindex="26" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-header pl-0">
+                                <h4 class="card-title">Others</h4>
+                            </div >
+                            <div class="row">
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="diagnosed_tb">Already diagnosed with TB? <span class="text-danger">*</span></label>
+                                        <select class="custom-select" name="diagnosed_tb" id="diagnosed_tb" tabindex="22">
+                                            <option value="" selected>Select</option>
+                                            <option value="2">Yes</option>
+                                            <option value="1">No</option>
+                                            <option value="3">Update</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12 d-none is_diagnosed">
+                                    <div class="form-group">
+                                        <label for="nikshay_id">Nikshay ID</label>
+                                        {% if nikshay_exist %}
+                                            <input type="text" class="form-control credit-card-mask is-invalid" placeholder="1234 5678" id="nikshay_id" value="{{nikshay_id}}" name="nikshay_id" tabindex="23" />
+                                            <span id="nikshay_id-unique-error" class="error invalid-feedback" style="color: aqua">Nikshay id already exist.</span>
+                                        {% else %}
+                                        <input type="text" class="form-control credit-card-mask" placeholder="1234 5678" id="nikshay_id" value="{% if patient_art_obj.nikshay_id %}{{patient_art_obj.nikshay_id}}{% endif %}" name="nikshay_id" tabindex="23" />
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="samvaad_id">Samvaad Application ID</label>
+                                        {% if samvaad_id_exist %}
+                                            <input type="text" class="form-control credit-card-mask is-invalid" placeholder="5457 5448" id="samvaad_id" value="{{ samvaad_id}}" name="samvaad_id" tabindex="24" />
+                                            <span id="samvaad_exist_id-error" class="error invalid-feedback" style="color: aqua;">Samvaad id already exist.</span>
+                                        {% else %}
+                                            {% if patient_art_obj.samvaad_application_id %}
+                                                <input type="text" class="form-control credit-card-mask" placeholder="5457 5448" id="samvaad_id" value="{{ patient_art_obj.samvaad_application_id}}" name="samvaad_id" tabindex="24" />
+                                            {% else %}
+                                                <input type="text" class="form-control credit-card-mask" placeholder="5457 5448" id="samvaad_id"  name="samvaad_id" tabindex="24" />
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="disclosure_with_family">Disclosure with Family<span class="text-danger">*</span></label>
+                                        <select class="custom-select" name="disclosure_with_family" id="disclosure_with_family" tabindex="22">
+                                            <option value="" selected>Select</option>
+                                            <option value="2">Yes</option>
+                                            <option value="1">No</option>
+                                            <option value="3">Update</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-12">
+                                    <div class="form-group">
+                                        <label for="family_id">Family ID</label>
+                                        <input type="text" id="family_id" name="family_id" value="{% if patient_art_obj.art_family_id %}{{patient_art_obj.art_family_id}}{% endif %}" class="form-control" placeholder="" tabindex="8" />
+                                    </div>
+                                </div>
+                               
+                                <div class="col-12"><hr>
+                                </div>
+                                <div class="col-12 text-right">
+                                {% if uuid %}
+                                    {% with "art-registeration"|make_string:"edit" as keystring %}
+                                        {% if request|has_permission_for_action:keystring %}
+                                            <button type="submit" class="btn btn-primary mr-1" tabindex="5">Update</button>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <a href="{% url 'PatientManagement:patient_summary' uuid %}"> <span class="btn btn-outline-secondary">Cancel</span> </a>
+								{% else %}
+                                    {% with "register-new-patient"|make_string:"add" as keystring %}
+                                        {% if request|has_permission_for_action:keystring %}
+								            <button type="submit" class="btn btn-primary mr-1" tabindex="5">Submit</button>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <a href="{% url 'PatientManagement:patient_listing' %}"> <span class="btn btn-outline-secondary">Cancel</span> </a>
+								{% endif %}                                  
+                                </div>
+                            </div>
+                        </div>
+                        <fieldset>
+                        </form>
+                    </div>
+                </section>
+                <!-- Flatpickr Ends-->
+            </div>
+        </div>
+    </div>
+    <!-- END: Content-->
+
+    <!-- BEGIN: Vendor JS-->
+    <script src="/static/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="/static/app-assets/vendors/js/ui/jquery.sticky.js"></script>
+    <script src="/static/app-assets/vendors/js/pickers/pickadate/picker.js"></script>
+    <script src="/static/app-assets/vendors/js/pickers/pickadate/picker.date.js"></script>
+    <script src="/static/app-assets/vendors/js/pickers/pickadate/picker.time.js"></script>
+    <script src="/static/app-assets/vendors/js/pickers/pickadate/legacy.js"></script>
+
+    <!-- BEGIN: Validate JS -->
+    <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <!-- END: Validate JS -->
+
+    <script src="/static/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="/static/app-assets/js/core/app-menu.js"></script>
+    <script src="/static/app-assets/js/core/app.js"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: SITE JS -->
+    <script src="/static/assets/js/scripts.js"></script>
+    <!-- END: SITE JS -->
+
+    <script>
+        var addform = '{{add}}';
+        var  tb_register_presentform = '{{tb_register_present}}';
+    </script>
+    <!-- BEING: Registration Validation -->
+    <script src="/static/assets/js/art_registration.js"></script>
+    <!-- END: Registration Validation -->
+
+    <!-- BEGIN: Page JS-->
+    <script src="/static/app-assets/js/scripts/forms/pickers/form-pickers.js"></script>
+    <!-- END: Page JS-->
+
+    <script>
+        $(window).on('load', function() {
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+        })
+         function view_more_btn(){
+            $('.view_contain').slideToggle();
+            $('#text_change').text("View Less");
+        }
+    </script>
+
+<script>
+    $(".transferred_status").change(function(event) {
+        if($('#transferred_in_status').val() == 1){
+            $('#status_pre_art_care option[value="1"]').prop("selected", "selected");
+            $('#status_pre_art_care option[value="6"]').removeAttr("selected");
+        }else if($('#transferred_in_status').val() == 2){
+            $('#status_pre_art_care option[value="6"]').prop("selected", "selected");
+            $('#status_pre_art_care option[value="1"]').removeAttr("selected");
+        }
+    });
+</script> 
+
+<script>
+$('#transferred_in_state').change(function(){
+    $.ajax({
+        url : "/ajax/district/",
+        type:'POST',
+        data:{
+            state_id:$(this).val()
+        }, 
+        dataType: 'json',
+        success: function(response) {
+        stateOptions = "<option value='' selected>Select</option>";
+		$.each(response, function(key, row){
+				stateOptions += '<option value="'+row.id+'">'+row.name+'</option>';
+		});
+		$('#transferred_in_district').html(stateOptions);
+        }
+    });
+});
+
+$('#transferred_in_district').change(function(){
+    $.ajax({
+        url : "/ajax/art_center/",
+        type:'POST',
+        data:{
+            district_id:$(this).val()
+        }, 
+        dataType: 'json',
+        success: function(response) {
+        stateOptions = "<option value='' selected>Select</option>";
+		$.each(response, function(key, row){
+				stateOptions += '<option value="'+row.id+'">'+row.name+'</option>';
+		});
+		$('#transferred_in_art').html(stateOptions);
+        }
+    });
+});
+</script>
+    <!--- Update Art Registration form -->
+    {% if patient_art_obj %}
+    <script>
+        $(document).ready(function() {
+        
+        var  status_pre_art_care = "{{patient_art_obj.status_in_pre_art_care}}"
+        var b = parseInt(status_pre_art_care);
+        var n = b.toString();
+
+        if (n == '5'){
+            $(".is_transfer_out").removeClass('d-none');
+            $(".is_transferred_artc").removeClass('d-none');
+        }
+        
+        var  art_registeration_no = "{{patient_art_obj.art_reg_no}}"
+        if( n == "6" || art_registeration_no){
+			$(".is_art_reg").removeClass('d-none');
+		}
+
+        if (n == '2'){   
+            $(".is_died").removeClass('d-none');
+            $('.is_of_death').removeClass('d-none');
+            $('.is_transferred_artc').addClass('d-none');
+        }
+
+        var art_start_date = "{{patient_art_obj.art_start_date}}"
+
+        var  art_care_status = "{{patient_art_obj.art_care_status}}"
+        var art_care = parseInt(art_care_status);
+        var temp = art_care.toString();
+
+        if (temp == '2'){   
+            $(".is_died").removeClass('d-none');
+            $('.is_of_death').removeClass('d-none');
+            $('.is_transferred_artc').addClass('d-none');
+        }
+       
+        if( temp == "6"){
+			$(".is_transfer_out").removeClass('d-none');
+            $('.is_transferred_artc').removeClass('d-none');
+		}
+
+        var diagnosed_tb = "{{ patient_art_obj.already_diagnosed_tb}}"
+        var dia = parseInt(diagnosed_tb);
+        var n1 = dia.toString();
+        $("#diagnosed_tb").val(n1)
+
+        if(n1 == "2"){
+			$(".is_diagnosed").removeClass('d-none');
+		}
+
+        var disclosurefamily = "{{patient_art_obj.disclosure_with_family}}"
+        var dia = parseInt(disclosurefamily);
+        var family = dia.toString();
+        $("#disclosure_with_family").val(family)
+
+        var transferred_in = "{{ patient_art_obj.transferred_in}}"
+        var tra = parseInt(transferred_in);
+        var n = tra.toString();
+        $("#transferred_in").val(n)
+
+        if(n == "2"){
+			$(".trans_in").removeClass('d-none');
+		}
+
+        var transferred_status = parseInt("{{ patient_art_obj.transfer_in_status}}")
+        $("#transferred_in_status").val(transferred_status)
+
+        var art_reg_diabete = parseInt("{{patient_art_obj.art_reg_diabetes}}")
+        $("#art_reg_diabetes").val(art_reg_diabete)
+
+        var art_reg_hyper = parseInt("{{patient_art_obj.art_reg_hypertention}}")
+        $("#art_reg_hypertention").val(art_reg_hyper)
+
+        var his_take_pvt_ngo = "{{ patient_art_obj.private_treatment_history }}"
+        var his = parseInt(his_take_pvt_ngo);
+        var n = his.toString();
+        $("#his_take_pvt_ngo").val(n)
+
+        if(n == "2"){
+			$(".is_dt_of_ngo").removeClass('d-none');
+		}
+    })
+
+    var his_ta = "{{patient_art_obj.death_cause_uuid}}"
+    if (his_ta == "e40b2369-ed8e-4cb2-9977-ff266738413c"){
+        $(".is_reason_death").removeClass('d-none');
+    }
+    </script>
+    {% endif %}    
+
+    <script src="/static/app-assets/vendors/js/extensions/sweetalert2.all.min.js"></script>
+    <script src="/static/app-assets/js/scripts/extensions/ext-component-sweet-alerts.js"></script>
+    
+    <script>
+        var edited = '{{edited}}'
+        var added = '{{added}}'
+        var uuid  = '{{patient_registration.uuid}}'
+        if(edited || added){
+            Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Data has been submitted successfully',
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: {
+              confirmButton: 'btn btn-primary'
+            },
+            buttonsStyling: false
+          }).then(function() {
+              if(added){
+                window.location.href=`/patient/sociodemographics/${uuid}`
+              }else{
+               window.location.href=`/patient/patient_summary/${uuid}`
+                }
+              }
+              );
+        }
+    </script>
+
+<!-- ## Unique Valdation Script  Starts -->
+    {% if art_reg_no_exist or pre_art_no_exist or samvaad_id_exist or nikshay_exist or pid_exist %}
+    <script>
+        $(document).ready(function() {
+        var patient_name   = "{{ patient_name }}"
+        $('#patient_name').val(patient_name)
+        
+        var date_of_registration = "{{date_of_registration}}"
+        $('#date_of_registration').val(date_of_registration)
+
+        var pre_art_no = "{{pre_art_no}}"
+        $('#pre_art_no').val(pre_art_no)
+
+        var family_id = "{{family_id}}"
+        $('#family_id').val(family_id)
+
+        var art_reg_no = "{{art_reg_no}}" 
+        if (art_reg_no){
+            $('#art_reg_no').val(art_reg_no)
+        }
+        var date_start_art = "{{date_start_art}}"
+        if(date_start_art){
+            $('#date_start_art').val(date_start_art)
+        }
+
+        var status_pre_art_care = "{{status_pre_art_care}}"
+        $('#status_pre_art_care').val(status_pre_art_care)
+        if (status_pre_art_care == '5'){
+            $(".is_transfer_out").removeClass('d-none');
+            $(".is_transferred_artc").removeClass('d-none');
+        }
+
+        if( status_pre_art_care == "6" || art_reg_no){
+			$(".is_art_reg").removeClass('d-none');
+		}
+
+        if (status_pre_art_care == '2'){   
+            $(".is_died").removeClass('d-none');
+            $('.is_of_death').removeClass('d-none');
+            $('.is_transferred_artc').addClass('d-none');
+        }
+
+        var transferred_in ="{{transferred_in}}"
+        $('#transferred_in').val(transferred_in)
+        if(transferred_in == "2"){
+			$(".trans_in").removeClass('d-none');
+            var date_art_init  = "{{date_art_init}}"
+            $('#date_art_init').val(date_art_init)
+		    }
+
+        var transferred_status ="{{transferred_in_status}}"
+        $('#transferred_in_status').val(transferred_status)    
+
+        var his_take_pvt_ngo ="{{his_take_pvt_ngo}}"
+        $('#his_take_pvt_ngo').val(his_take_pvt_ngo)
+        if(his_take_pvt_ngo == "2"){
+			$(".is_dt_of_ngo").removeClass('d-none');
+		}
+
+        var dt_of_pvt_ngo  ="{{dt_of_pvt_ngo}}"
+        if(dt_of_pvt_ngo){
+			$('#dt_of_pvt_ngo').val(dt_of_pvt_ngo)
+		}
+
+        var confirm_hiv_date ="{{confirm_hiv_date}}"
+        if (confirm_hiv_date){
+            $('#confirm_hiv_date').val(confirm_hiv_date)
+        }
+        
+        var place_of_hiv ="{{place_of_hiv}}"
+        if(place_of_hiv){
+            $('#place_of_hiv').val(place_of_hiv)
+        }
+        
+        var pid_num ="{{pid_num}}"
+        if (pid_num){
+            $('#pid_num').val(pid_num)
+        }
+        var hiv_report = "{{hiv_report}}"
+        if (hiv_report){
+            $('#hiv_report').val(hiv_report)
+        }
+
+        var diagnosed_tb = "{{diagnosed_tb}}"
+        if (diagnosed_tb){
+            $('#diagnosed_tb').val(diagnosed_tb)
+            if(diagnosed_tb == "2"){
+			$(".is_diagnosed").removeClass('d-none');
+		    }
+        }
+
+        var disclosure_with_family = "{{disclosure_with_family}}"
+        if (disclosure_with_family){
+            $('#disclosure_with_family').val(disclosure_with_family)
+        }
+
+        var nikshay_id = '{{nikshay_id}}'
+        if (nikshay_id){
+            $('#nikshay_id').val(nikshay_id)
+        }
+        
+        var samvaad_id = '{{samvaad_id}}'
+        if (samvaad_id){
+            $('#samvaad_id').val(samvaad_id)
+        }
+
+        var art_reg_diabetes = '{{art_reg_diabetes}}'
+        if (art_reg_diabetes){
+            $('#art_reg_diabetes').val(art_reg_diabetes)
+        }
+
+        var art_reg_hypertention = '{{art_reg_hypertention}}'
+        if (art_reg_hypertention){
+            $('#art_reg_hypertention').val(art_reg_hypertention)
+        }
+
+        var date_of_death = '{{date_of_death}}'
+        if (date_of_death){
+            $('#date_of_death').val(date_of_death)
+        }
+        var cause_of_death = '{{cause_of_death}}'
+        if (cause_of_death){
+            $('#cause_of_death').val(cause_of_death)
+        }
+        var transferred_in_state = '{{transferred_in_state}}'
+        if (transferred_in_state){
+            $('#transferred_in_state').val(transferred_in_state)
+            
+            $.ajax({
+                url : "/ajax/district/",
+                type:'POST',
+                data:{
+                    state_id:transferred_in_state
+                }, 
+                dataType: 'json',
+                success: function(response) {
+                var transferred_in_district = '{{transferred_in_district}}'
+                $.each(response, function(key, row){
+                    if (transferred_in_district == row.id){
+                        $('#transferred_in_district').append(`<option selected value="${row.id}">${row.name}</option>`);
+                    }else{
+                        $('#transferred_in_district').append(`<option value="${row.id}">${row.name}</option>`);
+                    }
+                });
+                }
+            });
+        }
+        
+        var transferred_in_district = '{{transferred_in_district}}'
+        if (transferred_in_district){
+            $('#transferred_in_district').val(transferred_in_district)
+            $.ajax({
+                url : "/ajax/art_center/",
+                type:'POST',
+                data:{
+                    district_id:transferred_in_district
+                }, 
+                dataType: 'json',
+                success: function(response) {
+                var transferred_in_art = '{{transferred_in_art}}'
+                $.each(response, function(key, row){
+                    if (transferred_in_art == row.id){
+                        $('#transferred_in_art').append(`<option selected value="${row.id}">${row.name}</option>`);
+                    }else{
+                        $('#transferred_in_art').append(`<option value="${row.id}">${row.name}</option>`);
+                    }
+                });
+                }
+            });
+        }
+        
+        var reason_death = '{{reason_death}}'
+        if (reason_death){
+            $('#reason_death').val(reason_death)
+        }
+
+        var status_art_care = '{{status_art_care}}'
+        if (status_art_care){
+            $('#status_art_care').val(status_art_care)
+            if( status_art_care == "6"){
+			$(".is_transfer_out").removeClass('d-none');
+            $('.is_transferred_artc').removeClass('d-none');
+		    }
+
+            var trans_out_conf_date = '{{trans_out_conf_date}}'
+            if (trans_out_conf_date){
+                $('#trans_out_conf_date').val(trans_out_conf_date)}
+
+            var trans_artc_code = '{{trans_artc_code}}'
+            if (trans_artc_code){
+                $('#trans_artc_code').val(trans_artc_code)}
+        }
+        
+        var  art_care_status = "{{patient_art_obj.art_care_status}}"
+        var art_care = parseInt(art_care_status);
+        var temp = art_care.toString();
+       
+        if( temp == "6"){
+			$(".is_transfer_out").removeClass('d-none');
+            $('.is_transferred_artc').removeClass('d-none');
+		}
+        })
+    </script>
+{% endif %}
+<!-- ## Unique Valdation Script  Ends -->
+{% endblock %}

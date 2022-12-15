@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+<h4>Hi,<br><br>
+    Following are the number of entries made in the application today</h4>
+{% if results %}
+<table>
+  <tr>
+    <th rowspan="2">Name of ARTC</th>
+    <th style="text-align:center" colspan="4">Entries</th>
+    <th style="text-align:center" colspan="11">ART Visit</th>
+    <th style="text-align:center" colspan="2">Family</th>
+    <th style="text-align:center" colspan="3">TB</th>
+    <th style="text-align:center" colspan="3">Other Illness</th>
+    <tr>
+      <th>Register New Patient</th>
+      <th>Existing patient visits</th>
+      <th>Profile updated</th>
+      <th>Socio demographic updated</th>
+
+      <th>Self</th>
+      <th>Proxy</th>
+      <th>4S +ve</th>
+      <th>BP recorded</th>
+      <th>RBS recorded</th>
+      <th>Investigation recorded</th>
+      <th>Treatment recorded</th>
+      <th>Legacy CD4 recorded</th>
+      <th>EAC recorded</th>
+      <th>PPTCT recorded</th>
+      <th>Counselling recorded</th>
+
+      <th>Family recorded</th>
+      <th>Widow Pension recorded</th>
+
+      <th>IPT recorded</th>
+      <th>TB line list recorded</th>
+      <th>TB Register recorded</th>
+
+      <th>Co-infection Recorded</th>
+      <th>Co-morbidity recorded</th>
+
+    </tr>
+  </tr>
+  <tr>
+    {% for post in results %}
+      <tr>
+        <td>{{post.boundary_name}}</td>
+        <td>{{post.patient_count}}</td>
+        <td>{{post.visit_count}}</td>
+        <td>{{post.profile_updated}}</td>
+        <td>{{post.sociodemographics_updated}}</td>
+
+        <td>{{post.art_visit_self}}</td>
+        <td>{{post.proxy_count}}</td>
+        <td>{{post.s4_screening_status_count}}</td>
+        <td>{{post.bp_count}}</td> 
+        <td>{{post.random_count}}</td> 
+        <td>{{post.investigation_count}}</td> 
+        <td>{{post.treatment_updated_obj}}</td> 
+        <td>{{post.legacycd4_updated_obj}}</td>
+        <td>{{post.eac_updated_obj}}</td>
+        <td>{{post.pptct_updated_obj}}</td>
+        <td>{{post.counselling_updated_obj}}</td>
+
+        <td>{{post.family_updated_obj}}</td>
+        <td>{{post.widowPension_updated_obj}}</td>
+
+        <td>{{post.ipt_updated_obj}}</td>
+        <td>{{post.tbline_updated_obj}}</td>
+        <td>{{post.tbreg_updated_obj}}</td>
+
+        <td>{{post.co_infection_updated_obj}}</td>
+        <td>{{post.comorbidity_updated_obj}}</td>
+      </tr>
+    {% endfor %}
+  </tr>
+</table>
+{% else %}
+<h2>No entries made today in the application.</h2>
+{% endif %}
+<h4>Regards<br>Job Aid Team</h4>
+</body>
+</html>

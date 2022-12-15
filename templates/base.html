@@ -1,0 +1,64 @@
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- icon link -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  {% block title %}<title>JOb_Aid</title>{% endblock %}
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid"style="margin-left:400px;">
+        <!-- <img src="https://static.vecteezy.com/system/resources/previews/009/029/017/original/mgk-logo-mgk-letter-mgk-letter-logo-design-initials-mgk-logo-linked-with-circle-and-uppercase-monogram-logo-mgk-typography-for-technology-business-and-real-estate-brand-vector.jpg "           style="height: 30px;
+        width: 30px;"> -->
+       
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="{% url 'plha_listing' %}"  id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-dot-circle-o" aria-hidden="true";color:'blue';></i> Dashboard</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href=""><i class="fa fa-line-chart" aria-hidden="true"></i> Dashboard</a></li>
+          <li><a class="dropdown-item" href=""><i class="fa fa-bar-chart" aria-hidden="true"></i> Trends Dashboard</a></li>
+          <li><hr class="dropdown-divider"></li>
+        </ul>
+      </li>
+
+        <a class="navbar-brand" href="{% url 'patient_register' %}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Register New Patient</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+          <!-- <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href=" ">Register New Patient</a>
+            </li> -->
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'plha_listing' %}"><i class="fa fa-bars";color:'blue';></i> PHLA-Listing</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href=""><i class="fa fa-bars";color:'blue';></i> MLL-Report</a>
+          </li>
+        </ul>
+        </div>
+
+
+
+</div>
+</nav> 
+
+
+<div class="container mt-3" >
+
+{% block content %}{% endblock %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> 
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+</body>
+</html>
+
+
+

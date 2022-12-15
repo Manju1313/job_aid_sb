@@ -1,0 +1,105 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content-body">
+        {% comment %}
+            {% if welcome_page == 0 %}
+            <center style="font-size:20px">Welcome to Job Aid</center>
+            {% endif %}
+        {% endcomment %}
+        <!-- Ajax Sourced Server-side -->
+
+        <!-- Advanced Search -->
+        <section id="advanced-search-datatable">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header border-bottom">
+                            <h4 class="card-title">Patient listing</h4>
+                        </div>
+                        <div class="card-header ">
+                            <h6 class="card-title">Advance search</h6>
+                        </div>
+                        <!--Search Form -->
+                        <div class="card-body mt-2">
+                            <form class="dt_adv_search" method="POST">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-row mb-1">
+                                            <div class="col-lg-4">
+                                                <label>ART Number:</label>
+                                                <input type="text" class="form-control dt-input dt-full-name" data-column="2" placeholder="ABCD - 1234" data-column-index="1" />
+                                                
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Patient Name:</label>
+                                                <input type="text" class="form-control dt-input dt-ART-number" data-column="1" placeholder="Alaric Beslier" data-column-index="0" />
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Mobile Number:</label>
+                                                <input type="number" class="form-control dt-input" placeholder="+912354685200"  />
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-lg-4">
+                                                <label>Aadhar Number:</label>
+                                                <input type="number" class="form-control dt-input" placeholder="1600 2278 5528" />
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="customSelect">ART Status</label>
+                                                    <select class="custom-select" id="customSelect" data-column="5" data-column-index="2" />
+                                                        <option selected>Open this menu</option>
+                                                        <option value="Alive on ART">Alive on ART</option>
+                                                        <option value="Died">Died</option>
+                                                        <option value="LFU after 1 Jan 2017"> LFU after 1 Jan 2017</option>
+                                                        <option value="Stopped">Stopped</option>
+                                                        <option value="Missed">Missed</option>
+                                                        <option value="Transfer Out">Transfer Out</option>
+                                                        <option value="Opted out">Opted out</option>
+                                                        <option value="LFU before 31 Dec 2016">LFU before 31 Dec 2016</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="customSelect">Gender</label>
+                                                    <select class="custom-select" id="customSelect">
+                                                        <option selected>Open this menu</option>
+                                                        <option value="male">Male</option>
+                                                        <option value="female">Female</option>
+                                                        <option value="ts/tg">TS / TG</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <hr class="my-0" />
+                        <div class="card-datatable">
+                            <table class="dt-advanced-search table">
+                                <thead>
+                                    <tr>
+                                        <th >1</th>
+                                        <th>Patient name</th>
+                                        <th>ART number</th>
+                                        <th>ART status</th>
+                                        <th>Last visit date</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--/ Advanced Search -->
+
+    </div>
+</div>
+{% endblock %}
+
